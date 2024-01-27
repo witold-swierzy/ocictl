@@ -4,17 +4,37 @@ OCI Cli offers a command line interface to work with OCI resources, like compute
 
 OCICTL is a tool, which uses in the background standard OCI Cli interface, but instead of forcing using JSON it accepts more user-friendly, text ways of providing/getting required data
 
-# Requirements:
-Python 3.* 
-OCI CLI installed and configured
-bash shell
+## Requirements:
+### Python 3.* 
+### OCI CLI installed and configured
+### bash shell
 
 Review Date: 28.01.2024
 
-### Documentation
-
+## Documentation
 - [OCI Cli official documentation](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/cliconcepts.htm)
 
+## Usage
+ocictl.sh adb     list
+                  start   <service_name>
+                  stop    <service_name>
+          db      list
+                  start <node-id>
+                  stop <node-id>
+          compute list
+                  start   <service_name>
+                  stop    <service_name>
+                  install <service_name>
+          os      bucket list
+                         create <bucket_name>
+          os             delete <bucket_name>
+          os      file   list <bucket_name>
+          os      file   put  <bucket_name> <file_name>
+          os      file   get  <bucket_name> <file_name>
+          group   list
+          group   start  <groupname>
+          group   stop   <groupname>
+          
 # License
 
 Copyright (c) 2023 Oracle and/or its affiliates.
