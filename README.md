@@ -18,16 +18,39 @@ Review Date: 28.01.2024
 ### to list all autonomous databases
 ocictl.sh adb     list<p>
 ### to start an autonomous database
-ocictl.sh adb start <database-name><p>
+ocictl.sh adb start <display-name><p>
 ### to stop an autonomous database
-ocictl.sh adb stop <database-name><p>
+ocictl.sh adb stop <display-name><p>
 ### to list all base database services
 ocictl.sh adb     list<p>
 ### to start a base database service
-ocictl.sh adb start <database-name><p>
+ocictl.sh adb start <display-name><p>
 ### to stop a base database service
-ocictl.sh adb stop <database-name><p>
-          
+ocictl.sh adb stop <display-name><p>
+### to list compute instances
+ocictl.sh compute list
+### to start a compute instance
+ocictl.sh compute start <display-name>
+### to stop a compute instance
+ocictl.sh compute stop <display-name>
+### to list existing Object Store buckets
+ocictl.sh os bucket list
+### to create a bucket
+ocictl.sh os bucket create <bucket-name>
+### to delete a bucket
+ocictl.sh os bucket delete <bucket-name>
+### to list files stored in a bucket
+ocictl.sh os file list <bucket-name>
+### to upload a file into a bucket
+ocictl.sh os file put <bucket-name> <file-name>
+### to download a file from a bucket
+ocictl.sh os file get <bucket-name> <file-name>
+### to start a group of resources
+ocictl.sh group start <group-name>
+### to stop a group of resource
+ocictl.sh group stop <group-name>
+### to list existing groups
+ocictl.sh group list
 # License
 
 Copyright (c) 2023 Oracle and/or its affiliates.
