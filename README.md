@@ -15,7 +15,7 @@ Review Date: 28.01.2024
 - [OCI Cli official documentation](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/cliconcepts.htm)
 
 ## Usage
-ocictl.sh adb     list
+ocictl.sh adb     list<p>
                   start   <service_name>
                   stop    <service_name>
           db      list
