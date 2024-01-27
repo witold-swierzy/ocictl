@@ -15,25 +15,18 @@ Review Date: 28.01.2024
 - [OCI Cli official documentation](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/cliconcepts.htm)
 
 ## Usage
+### to list all autonomous databases
 ocictl.sh adb     list<p>
-                  start   <service_name>
-                  stop    <service_name>
-          db      list
-                  start <node-id>
-                  stop <node-id>
-          compute list
-                  start   <service_name>
-                  stop    <service_name>
-                  install <service_name>
-          os      bucket list
-                         create <bucket_name>
-          os             delete <bucket_name>
-          os      file   list <bucket_name>
-          os      file   put  <bucket_name> <file_name>
-          os      file   get  <bucket_name> <file_name>
-          group   list
-          group   start  <groupname>
-          group   stop   <groupname>
+### to start an autonomous database
+ocictl.sh adb start <database-name><p>
+### to stop an autonomous database
+ocictl.sh adb stop <database-name><p>
+### to list all base database services
+ocictl.sh adb     list<p>
+### to start a base database service
+ocictl.sh adb start <database-name><p>
+### to stop a base database service
+ocictl.sh adb stop <database-name><p>
           
 # License
 
