@@ -6,12 +6,11 @@ usage () {
     printf "                  start   <service_name>\n"
     printf "                  stop    <service_name>\n"
     printf "          db      list\n"
-    printf "                  start <node-id>\n"
-    printf "                  stop <node-id>\n"
+    printf "                  start <service-name>\n"
+    printf "                  stop <service-name>\n"
     printf "          compute list\n"
     printf "                  start   <service_name>\n"
     printf "                  stop    <service_name>\n"
-    printf "                  install <service_name>\n"
     printf "          os      bucket list\n"
     printf "                         create <bucket_name>\n"
     printf "          os             delete <bucket_name>\n"
@@ -245,6 +244,12 @@ grouplist() {
     done
 }
 
+SWD=`dirname $0`
+if [ -z $OCI_TID ];
+then
+    . $SWD/env_ocictl.sh
+fi
+
 case ${1} in
     "group"   ) case ${2} in
                     "list"  ) if [ $# -ne 2 ];
@@ -346,13 +351,6 @@ case ${1} in
                                   exit 0
                                 fi
                                 list_compute_instances
-                                ;;
-                    "install" ) if [ $# -ne 3 ];
-                                then
-                                  usage
-                                  exit 0
-                                fi
-                                install_instance ${3}
                                 ;;
                      *        ) usage
                                 ;;
