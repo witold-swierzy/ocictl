@@ -1,5 +1,5 @@
 # OCICTL. A simple command-line tool for accessing database and compute resources
-
+aaa
 OCI Cli offers a command line interface to work with OCI resources, like compute instances, databases and object storage. However - as it uses JSON as a basic format for providing/getting data, its direct usage may seem, in some simpler cases, a bit unfriendly
 
 OCICTL is a tool, which uses in the background standard OCI Cli interface, but instead of forcing using JSON it accepts more user-friendly, text ways of providing/getting required data
