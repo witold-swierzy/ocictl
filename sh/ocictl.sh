@@ -1,4 +1,10 @@
+# main script
+
+
 #!/bin/bash
+
+
+
 
 usage () {
     printf "usage:\n"
