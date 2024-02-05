@@ -199,7 +199,7 @@ groupstart () {
                         exit
                         ;;
         esac
-    done < $OCICTL_CONFIG/$1.oci
+    done < $OCICTL_CONFIG/$1.oci.grp
 }
 
 groupstop () {
@@ -215,7 +215,7 @@ groupstop () {
                         exit
                         ;;
         esac
-    done < $OCICTL_CONFIG/$1.oci
+    done < $OCICTL_CONFIG/$1.oci.grp
 }
 
 groupstatus() {
@@ -231,11 +231,11 @@ groupstatus() {
                         exit
                         ;;
         esac
-    done < $OCICTL_CONFIG/$1.oci
+    done < $OCICTL_CONFIG/$1.oci.grp
 }
 
 grouplist() {
-    for file in $OCICTL_CONFIG/*.oci;
+    for file in $OCICTL_CONFIG/*.oci.grp;
     do
         printf "%s\n" `basename $file|cut -d'.' -f1`
         while read srv type; do
