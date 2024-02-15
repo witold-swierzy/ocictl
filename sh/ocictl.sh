@@ -5,6 +5,9 @@ usage () {
     printf "ocictl.sh adb     list\n"
     printf "                  start   <service_name>\n"
     printf "                  stop    <service_name>\n"
+    printf "                  clone   <source_name> <target_name> <admin_password>\n"
+    printf "                  delete  <service_name>\n"  
+    printf "                  wallet  <service_name> <password>\n"
     printf "          db      list\n"
     printf "                  start <service-name>\n"
     printf "                  stop <service-name>\n"
@@ -161,6 +164,24 @@ stop_adb_instance () {
     oci db autonomous-database stop --autonomous-database-id "$ADB_ID"
 }
 
+clone_adb_instance() {
+    ADB_SYSTEM=`oci db autonomous-database list --compartment-id $OCI_CID --display-name $1`
+    ADB_ID=`python3 $OCICTL_HOME/python/get_lov.py "$ADB_SYSTEM" "id"`
+    oci db autonomous-database create-from-clone --compartment-id "$OCI_CID" --source-id "$ADB_ID" --clone-type FULL --admin-password "$3" --db-name "$2" --display-name "$2" --data-storage-size-in-tbs 1 --compute-model ECPU --compute-count 2
+}
+
+delete_adb_instance() {
+    ADB_SYSTEM=`oci db autonomous-database list --compartment-id $OCI_CID --display-name $1`
+    ADB_ID=`python3 $OCICTL_HOME/python/get_lov.py "$ADB_SYSTEM" "id"`
+    oci db autonomous-database delete --autonomous-database-id "$ADB_ID"
+}
+
+download_adb_wallet() {
+    ADB_SYSTEM=`oci db autonomous-database list --compartment-id $OCI_CID --display-name $1`    
+    ADB_ID=`python3 $OCICTL_HOME/python/get_lov.py "$ADB_SYSTEM" "id"`
+    oci db autonomous-database generate-wallet --autonomous-database-id "$ADB_ID" --password "$2" --file $WALLETS_HOME/wallet_$1.zip
+}
+
 list_bucket () {
     BUCKETS=`oci os bucket list --compartment-id $OCI_CID`
     python3 $OCICTL_HOME/python/get_lov.py "$BUCKETS" "name"
@@ -306,6 +327,27 @@ case ${1} in
                               fi
                               list_adb_instances
                               ;;
+                    "clone" ) if [ $# -ne 5 ];
+                              then
+                                usage
+                                exit 0
+                              fi
+                              clone_adb_instance $3 $4 $5
+                              ;;
+                    "delete") if [ $# -ne 3 ];
+                              then
+                                usage
+                                exit 0
+                              fi
+                              delete_adb_instance ${3}
+                              ;;  
+                    "wallet") if [ $# -ne 4 ];
+                              then
+                                usage
+                                exit 0
+                              fi
+                              download_adb_wallet ${3} ${4}
+                              ;;                              
                      *      ) usage
                               ;;
                 esac
