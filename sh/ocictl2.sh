@@ -9,12 +9,8 @@ usage () {
     printf "                  delete  <service_name>\n"  
     printf "                  wallet  <service_name> <password>\n"
     printf "          db      list\n"
-    printf "                  start     <service-name>\n"
-    printf "                  stop      <service-name>\n"
-    printf "                  listpdb   <service-name>\n"
-    printf "                  createpdb <service-name> <pdb-name> <pdb-admin-password> <tde-wallet-password>\n"
-    printf "                  deletepdb <service_name> <pdbname>\n"
-    printf "                  clonepdb  <service_name> <source_pdb_name> <target_pdb_name> <pdb-admin-password> <tde-wallet-password>\n"
+    printf "                  start <service-name>\n"
+    printf "                  stop <service-name>\n"
     printf "          compute list\n"
     printf "                  start   <service_name>\n"
     printf "                  stop    <service_name>\n"
@@ -102,33 +98,6 @@ stop_db () {
     do
         oci db node stop --db-node-id "$nid"
     done
-}
-
-list_pdb() {
-    DB_SYSTEM=`oci db database list --compartment-id $OCI_CID --display-name $1`
-    DB_ID=`python3 $OCICTL_HOME/python/get_lov.py "$DB_SYSTEM" "id"`
-    oci db pluggable-database list --database-id "$DB_ID"|python3 $OCICTL_HOME/python/pdb_list.py
-    #oci db pluggable-database list --database-id "$DB_ID"
-}
-
-create_pdb() {
-    DB_SYSTEM=`oci db database list --compartment-id $OCI_CID --display-name $1`
-    DB_ID=`python3 $OCICTL_HOME/python/get_lov.py "$DB_SYSTEM" "id"`
-    oci db pluggable-database create --container-database-id "$DB_ID" --pdb-name "$2" --pdb-admin-password "$3" --tde-wallet-password "$4"
-}
-
-clone_pdb() {
-    DB_SYSTEM=`oci db database list --compartment-id $OCI_CID --display-name $1`
-    DB_ID=`python3 $OCICTL_HOME/python/get_lov.py "$DB_SYSTEM" "id"`
-    PDB_ID=`oci db pluggable-database list --database-id "$DB_ID"|python3 $OCICTL_HOME/python/pdb_list2.py "$2"|cut -d":" -f2`
-    oci db pluggable-database local-clone --pluggable-database-id "$PDB_ID" --cloned-pdb-name "$3" --pdb-admin-password "$4" --target-tde-wallet-password "$5"
-}
-
-delete_pdb() {
-    DB_SYSTEM=`oci db database list --compartment-id $OCI_CID --display-name $1`
-    DB_ID=`python3 $OCICTL_HOME/python/get_lov.py "$DB_SYSTEM" "id"` 
-    PDB_ID=`oci db pluggable-database list --database-id "$DB_ID"|python3 $OCICTL_HOME/python/pdb_list2.py "$2"|cut -d":" -f2`
-    oci db pluggable-database delete --pluggable-database-id "$PDB_ID"
 }
 
 list_db_systems () {
@@ -384,53 +353,25 @@ case ${1} in
                 esac
                 ;;
     "db"      ) case ${2} in
-	            "list"    ) list_db_systems
-		   		;; 
-	            "listpdb" ) if [ $# -ne 3 ];
+	                "list"    ) list_db_systems 
+					            ;;
+                    "start"   ) if [ $# -ne 3 ];
                                 then
                                     usage
                                     exit 0
                                 fi
-                                list_pdb $3
+                                start_db $3
                                 ;;
-		    "createpdb" ) if [ $# -ne 6 ];
+                    "stop"    ) if [ $# -ne 3 ];
                                 then
                                     usage
                                     exit 0
                                 fi
-                                create_pdb $3 $4 $5 $6
+                                stop_db $3
+                                ;;                                
+							* ) usage
                                 ;;
-		    "clonepdb"  ) if [ $# -ne 7 ];
-                                then
-                                    usage
-                                    exit 0
-                                fi
-                                clone_pdb $3 $4 $5 $6 $7 
-                                ;;
-		    "deletepdb" ) if [ $# -ne 4 ];
-                                then
-                                    usage
-                                    exit 0
-                                fi
-                                delete_pdb $3 $4
-				;;
-                    "start"     ) if [ $# -ne 3 ];
-                                  then
-                                      usage
-                                      exit 0
-                                  fi
-                                  start_db $3
-                                  ;;
-                    "stop"      ) if [ $# -ne 3 ];
-                                  then
-                                      usage
-                                      exit 0
-                                  fi
-                                  stop_db $3
-                                  ;;                                
-			      * ) usage
-                                  ;;
-	esac ;;
+				esac ;;
     "compute" ) case ${2} in
                     "start"   ) if [ $# -ne 3 ];
                                 then
