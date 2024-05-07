@@ -4,6 +4,8 @@ OCI Cli offers a command line interface to work with OCI resources, like compute
 
 OCICTL is a tool simplifying using OCI Cli. It displays information in a more readable text format and allows for providing display names of components instead of their OCI identifiers. It also makes easier basic management of composite services, like, for example, Base Database Service, which consist of multiple internal components (databases, nodes, etc).
 
+## NOTE
+This tool is for demonstration purposes only. It is NOT officially supported by Oracle.
 
 Review Date: 28.01.2024
 
