@@ -7,7 +7,7 @@ for c in data:
         if c['lifecycle-state']=='TERMINATED':
             print (c['pdb-name']+":TERMINATED")
         elif c['lifecycle-state']=='PROVISIONING':
-            print (c['pdb-name']+":PROVISIONING)
+            print (c['pdb-name']+":PROVISIONING")
         else:
             print (c['pdb-name']+":"+c['id'])
 
