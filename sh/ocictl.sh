@@ -15,6 +15,8 @@ usage () {
     printf "                  createpdb <service-name> <pdb-name> <pdb-admin-password> <tde-wallet-password>\n"
     printf "                  deletepdb <service_name> <pdbname>\n"
     printf "                  clonepdb  <service_name> <source_pdb_name> <target_pdb_name> <pdb-admin-password> <tde-wallet-password>\n"
+    printf "                  startpdb  <service_name> <pdb_name>\n"
+    printf "                  stoppdb   <service_name> <pdb_name>\n"
     printf "          compute list\n"
     printf "                  start   <service_name>\n"
     printf "                  stop    <service_name>\n"
@@ -108,7 +110,20 @@ list_pdb() {
     DB_SYSTEM=`oci db database list --compartment-id $OCI_CID --display-name $1`
     DB_ID=`python3 $OCICTL_HOME/python/get_lov.py "$DB_SYSTEM" "id"`
     oci db pluggable-database list --database-id "$DB_ID"|python3 $OCICTL_HOME/python/pdb_list.py
-    #oci db pluggable-database list --database-id "$DB_ID"
+}
+
+start_pdb() {
+    DB_SYSTEM=`oci db database list --compartment-id $OCI_CID --display-name $1`
+    DB_ID=`python3 $OCICTL_HOME/python/get_lov.py "$DB_SYSTEM" "id"`
+    PDB_ID=`oci db pluggable-database list --database-id "$DB_ID"|python3 $OCICTL_HOME/python/pdb_list2.py "$2"|cut -d":" -f2`
+    oci db pluggable-database start --pluggable-database-id "$PDB_ID"
+}
+
+stop_pdb() {
+    DB_SYSTEM=`oci db database list --compartment-id $OCI_CID --display-name $1`
+    DB_ID=`python3 $OCICTL_HOME/python/get_lov.py "$DB_SYSTEM" "id"`
+    PDB_ID=`oci db pluggable-database list --database-id "$DB_ID"|python3 $OCICTL_HOME/python/pdb_list2.py "$2"|cut -d":" -f2`
+    oci db pluggable-database stop --pluggable-database-id "$PDB_ID"
 }
 
 create_pdb() {
@@ -407,6 +422,20 @@ case ${1} in
                                 fi
                                 clone_pdb $3 $4 $5 $6 $7 
                                 ;;
+            "startpdb"   ) if [ $# -ne 4 ];
+                          then
+                                usage
+                                exit 0
+                          fi
+                          start_pdb $3 $4
+                          ;;
+            "stoppdb"   ) if [ $# -ne 4 ];
+                          then
+                                usage
+                                exit 0
+                          fi
+                          stop_pdb $3 $4
+                          ;;                          
 		    "deletepdb" ) if [ $# -ne 4 ];
                                 then
                                     usage
