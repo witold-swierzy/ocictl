@@ -11,6 +11,8 @@ usage () {
     printf "          db      list\n"
     printf "                  start     <service-name>\n"
     printf "                  stop      <service-name>\n"
+    printf "                  cpu-scale <service-name>  <#oCPU>\n"
+    #printf "                  storage-scale <service-name> <#GB>\n"
     printf "                  listpdb   <service-name>\n"
     printf "                  createpdb <service-name> <pdb-name> <pdb-admin-password> <tde-wallet-password>\n"
     printf "                  deletepdb <service_name> <pdbname>\n"
@@ -106,6 +108,18 @@ stop_db () {
     done
 }
 
+scale_cpu() {
+    DB_SYSTEM=`oci db database list --compartment-id $OCI_CID --display-name $1`
+    DB_ID=`python3 $OCICTL_HOME/python/get_lov.py "$DB_SYSTEM" "id"`  
+    DB_SYSTEM=`oci db database get --database-id "$DB_ID"`
+    DB_SYSTEM_ID=`python3 $OCICTL_HOME/python/get_value.py "$DB_SYSTEM" "db-system-id"`
+    oci db system update --db-system-id $DB_SYSTEM_ID --cpu-core-count $2 
+}
+
+scale_storage() {
+	    DB_SYSTEM=`oci db database list --compartment-id $OCI_CID --display-name $1`                                            DB_ID=`python3 $OCICTL_HOME/python/get_lov.py "$DB_SYSTEM" "id"`                                                        DB_SYSTEM=`oci db database get --database-id "$DB_ID"`                                                                  DB_SYSTEM_ID=`python3 $OCICTL_HOME/python/get_value.py "$DB_SYSTEM" "db-system-id"`                                     oci db system update --db-system-id $DB_SYSTEM_ID --data-storage-size-in-gbs $2
+}
+
 list_pdb() {
     DB_SYSTEM=`oci db database list --compartment-id $OCI_CID --display-name $1`
     DB_ID=`python3 $OCICTL_HOME/python/get_lov.py "$DB_SYSTEM" "id"`
@@ -161,11 +175,19 @@ list_db_systems () {
         if [ "$DB_LIFECYCLE_STATE" != "TERMINATED" ];
         then        
             DB_NAME=`python3 $OCICTL_HOME/python/get_value.py "$DB_SYSTEM" "db-name"`
+            DB_SYSTEM_ID=`python3 $OCICTL_HOME/python/get_value.py "$DB_SYSTEM" "db-system-id"`
+            DB_SYSTEM_2=`oci db system get --db-system-id "$DB_SYSTEM_ID"`
+            DB_CPUS=`python3 $OCICTL_HOME/python/get_value.py "$DB_SYSTEM_2" "cpu-core-count"`
+            DB_GBS=`python3 $OCICTL_HOME/python/get_value.py "$DB_SYSTEM_2" "data-storage-size-in-gbs"`
+            DB_USED_GBS=`python3 $OCICTL_HOME/python/get_value.py "$DB_SYSTEM_2" "data-storage-percentage"`
             DB_HOME_ID=`python3 $OCICTL_HOME/python/get_value.py "$DB_SYSTEM" "db-home-id"`
             DB_HOME=`oci db db-home get --db-home-id "$DB_HOME_ID"`
             DB_VERSION=`python3 $OCICTL_HOME/python/get_value.py "$DB_HOME" "db-version"`
             printf "db system:\n %s:%s\n" $DB_NAME $id
             printf " db version: %s\n" $DB_VERSION
+            printf " #oCPUs: %s\n" $DB_CPUS
+            printf " Storage (GB): %s\n" $DB_GBS
+            printf "    used (%%) : %s\n" $DB_USED_GBS
             DB_SYSTEM_ID=`python3 $OCICTL_HOME/python/get_value.py "$DB_SYSTEM" "db-system-id"`
             DB_NODE_LIST=`oci db node list --compartment-id $OCI_CID --db-system-id $DB_SYSTEM_ID`
             NODE_IDS=`python3 $OCICTL_HOME/python/get_lov.py "$DB_NODE_LIST" "id"`
@@ -399,8 +421,24 @@ case ${1} in
                 esac
                 ;;
     "db"      ) case ${2} in
-	            "list"    ) list_db_systems
-		   		;; 
+	            "list"    ) list_db_systems $3
+		   		            ;; 
+                            
+                "cpu-scale" ) if [ $# -ne 4 ];
+                                then
+                                    usage
+                                    exit 0
+                                fi
+                                scale_cpu $3 $4
+                                ;;
+                "storage-scale" ) if [ $# -ne 4 ];
+                                then
+                                    usage
+                                    exit 0
+                                fi
+                                scale_storage $3 $4
+                                ;;
+                
 	            "listpdb" ) if [ $# -ne 3 ];
                                 then
                                     usage
